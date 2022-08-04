@@ -1,8 +1,13 @@
-Fabric
-Flask-SQLAlchemy
-Flask-WTF
+fabric
+Flask
+Flask_SQLAlchemy
+Flask_WTF
+gunicorn
+numpy
+pandas
+passlib
+psycopg2
+python-dotenv
+requests
+SQLAlchemy
 WTForms
-coverage
-# ecdsa
-# paramiko
-# pycrypto
