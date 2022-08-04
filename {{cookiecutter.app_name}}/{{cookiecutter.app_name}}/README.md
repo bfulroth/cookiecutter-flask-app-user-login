@@ -25,7 +25,7 @@ Project Structure
   ├── Procfile
   ├── Procfile.dev
   ├── README.md
-  ├── app.py
+  ├── {{cookiecutter.app_name}}.py
   ├── config.py
   ├── error.log
   ├── forms.py

@@ -15,11 +15,11 @@ import os
 
 app = Flask(__name__)
 app.config.from_object('config')
-#db = SQLAlchemy(app)
+#db = SQLAlchemy({{cookiecutter.app_name}})
 
 # Automatically tear down SQLAlchemy.
 '''
-@app.teardown_request
+@{{cookiecutter.app_name}}.teardown_request
 def shutdown_session(exception=None):
     db_session.remove()
 '''
@@ -103,5 +103,5 @@ if __name__ == '__main__':
 '''
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))
-    app.run(host='0.0.0.0', port=port)
+    {{cookiecutter.app_name}}.run(host='0.0.0.0', port=port)
 '''
