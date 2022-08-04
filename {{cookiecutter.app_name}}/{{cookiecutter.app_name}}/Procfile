@@ -1,1 +1,1 @@
-web: gunicorn app:app --log-file=-
+web: gunicorn {{cookiecutter.app_name}} app:{{cookiecutter.app_name}} --log-file=-
