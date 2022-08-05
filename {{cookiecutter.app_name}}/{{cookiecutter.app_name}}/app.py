@@ -95,7 +95,7 @@ def register():
 
     # Redirect already logged in user
     if logged_in_user():
-        return redirect(url_for('pages/placeholder.about.html'))
+        return redirect(url_for('about'))
 
     form = RegisterForm(request.form)
     return render_template('forms/register.html', form=form, form_purpose='create_user')
@@ -120,9 +120,9 @@ def create_user():
         user = Users.query.filter_by(username = username).first()
 
         if user:
-            raise LookupError(f'User with username "{username}" already exists! Please choose another username.')
-
-
+            flash(f'User with username "{username}" already exists! Please choose another username.', 'danger')
+            # redirect back to signup page
+            redirect(url_for('register'))
 
         # User is unique, so let's create a new one
         user = Users(
@@ -155,10 +155,62 @@ def create_user():
         return redirect(url_for('register'))
 
 
-@app.route('/login')
-def login():
-    form = LoginForm(request.form)
-    return render_template('forms/login.html', form=form)
+@app.route('/login', methods = ['GET', 'POST'], defaults = POST_USER_LOGIN_DEFAULTS)
+def login(username, password, messages=[], errors=[]):
+
+    if request.method == 'GET':
+
+        # Redirect already logged in user
+        if logged_in_user():
+            return redirect(url_for('home'))
+
+        form = LoginForm(request.form)
+        return render_template('forms/login.html', form=form)
+
+    if request.method == 'POST':
+
+        username = request.form['username']
+        password = request.form['password']
+
+        # Sanitize the input
+        try:
+            username = check_string(username, "username")
+            password = check_string(password, "password")
+
+            # Does User Exist?
+            user = Users.query.filter_by(username = username).first()
+
+            if user is None:
+                raise KeyError('Invalid username or password.')
+
+            # Check User & Password
+            sha256_crypt.verify(password, user.password)
+
+            # set the logged in user's username in the session
+            session['username'] = username
+
+            # let the user know login was successful
+            flash(f'{username} is now logged in!', 'success')
+
+            return home()
+
+        except Exception as e:
+            # show the error
+            flash(get_error(e), 'danger')
+
+            # redirect back to login page
+            return redirect(url_for('login'))
+
+
+@app.route('/logout')
+def logout():
+    # Clear all session data
+    session.clear()
+
+    flash('Successfully logged out.', 'success')
+
+    # Go back to the login page.
+    return redirect(url_for('login'))
 
 
 @app.route('/forgot')
@@ -196,19 +248,19 @@ if not app.debug:
 
 # Sanitize user input methods
 # CITATION: Lab 5 app.py
-def check_string(str=None, label="", max_length=MAX_STRING_LENGTH):
+def check_string(string=None, label="", max_length=MAX_STRING_LENGTH):
     # can't have a null value!
-    if str is None:
+    if string is None:
         raise ValueError(f'Variable {label} cannot be null!')
     # strip the string of leading & trailing whitespace
-    str = str.strip()
+    string = string.strip()
 
-    if str == "":
+    if string == "":
         raise ValueError(f'Variable {label} is empty!')
-    elif len(str) > max_length:
-        raise ValueError(f'Variable {label} is too long! {len(str)} > {max_length}')
+    elif len(string) > max_length:
+        raise ValueError(f'Variable {label} is too long! {len(string)} > {max_length}')
 
-    return str
+    return string
 
 
 def check_int(num=None, label="", min=float('-inf'), max=float('inf')):
@@ -278,7 +330,7 @@ def logged_in_user():
     # 3. if the username is actually valid
     if 'username' in session and session['username'] != "":
         # Will return None if no such user exists
-        return SkinUser.query.filter_by( username = session['username'] ).first()
+        return Users.query.filter_by( username = session['username'] ).first()
     else:
         return None
 

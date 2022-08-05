@@ -15,5 +15,5 @@ class Users(Db.Model):
     username = Db.Column(Db.String(64), nullable=False)
     first_name = Db.Column(Db.String(64), nullable=False)
     last_name = Db.Column(Db.String(64), nullable=False)
-    password = Db.Column(Db.String(64), nullable=False)
+    password = Db.Column(Db.String(20), nullable=False)
     email = Db.Column(Db.String(64), nullable=False)

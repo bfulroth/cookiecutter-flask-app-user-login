@@ -28,11 +28,11 @@ class RegisterForm(Form):
 
 
 class LoginForm(Form):
-    name = StringField('Username', [DataRequired()])
+    username = StringField('Username', [DataRequired()])
     password = PasswordField('Password', [DataRequired()])
 
 
 class ForgotForm(Form):
     email = StringField(
-        'Email', validators=[DataRequired(), Length(min=6, max=40)]
+        'Email', validators=[DataRequired(), Length(min=6, max=64)]
     )
