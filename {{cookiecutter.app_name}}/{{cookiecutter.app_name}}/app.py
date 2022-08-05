@@ -9,13 +9,31 @@ from logging import Formatter, FileHandler
 from forms import *
 import os
 
+import gunicorn
+import psycopg2
+from dotenv import load_dotenv
+
+# Load environment variables
+load_dotenv('.env')
+
+# Database
+from flask_sqlalchemy import SQLAlchemy
+from models.users import Users, Db
+
 #----------------------------------------------------------------------------#
 # App Config.
 #----------------------------------------------------------------------------#
 
+# Initialize app
 app = Flask(__name__)
-app.config.from_object('config')
+app.database_key = os.environ.get('DATABASE_KEY')
 #db = SQLAlchemy({{cookiecutter.app_name}})
+
+# Initialize DB
+Db = SQLAlchemy()
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get("DATABASE_URL").replace("postgres://", "postgresql://")
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+Db.init_app(app)
 
 # Automatically tear down SQLAlchemy.
 '''
