@@ -8,7 +8,7 @@ Db = SQLAlchemy()
 class Users(Db.Model):
 
     # Ref. to table
-    __tablename__ = 'skin_users'
+    __tablename__ = 'users'
 
     # Class fields match columns
     uid = Db.Column(Db.Integer, primary_key=True, autoincrement=True)

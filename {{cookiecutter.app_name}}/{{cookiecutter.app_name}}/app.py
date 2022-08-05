@@ -2,7 +2,8 @@
 # Imports
 #----------------------------------------------------------------------------#
 
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, redirect
+from flask import session, flash, url_for
 # from flask.ext.sqlalchemy import SQLAlchemy
 import logging
 from logging import Formatter, FileHandler
@@ -19,6 +20,7 @@ load_dotenv('.env')
 # Database
 from flask_sqlalchemy import SQLAlchemy
 from models.users import Users, Db
+from passlib.hash import sha256_crypt
 
 #----------------------------------------------------------------------------#
 # App Config.
@@ -33,6 +35,7 @@ app.database_key = os.environ.get('DATABASE_KEY')
 Db = SQLAlchemy()
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get("DATABASE_URL").replace("postgres://", "postgresql://")
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+app.secret_key = os.environ.get('SECRET_KEY') # Make sure this is set in Heroku dashboard for this new app!
 Db.init_app(app)
 
 # Automatically tear down SQLAlchemy.
@@ -54,11 +57,27 @@ def login_required(test):
             return redirect(url_for('login'))
     return wrap
 '''
-#----------------------------------------------------------------------------#
-# Controllers.
-#----------------------------------------------------------------------------#
+
+# Define default route parameters
+MAX_STRING_LENGTH = 64
+MIN_PASSWORD_LENGTH = 6
+MAX_PASSWORD_LENGTH = 20
+
+# All null values! This is just for POST routes!!!
+POST_USER_REGISTER_DEFAULTS = {
+    "username": None,
+    "first_name": None,
+    "last_name": None,
+    "email": None,
+    "password": None
+}
+POST_USER_LOGIN_DEFAULTS = {
+    "username": None,
+    "password": None
+}
 
 
+# Pages
 @app.route('/')
 def home():
     return render_template('pages/placeholder.home.html')
@@ -69,16 +88,77 @@ def about():
     return render_template('pages/placeholder.about.html')
 
 
+'''User management'''
+# Register and create a User
+@app.route('/register', methods=['GET'])
+def register():
+
+    # Redirect already logged in user
+    if logged_in_user():
+        return redirect(url_for('pages/placeholder.about.html'))
+
+    form = RegisterForm(request.form)
+    return render_template('forms/register.html', form=form, form_purpose='create_user')
+
+
+@app.route('/user/create', methods=['POST'])
+def create_user():
+
+    try:
+
+
+        # Init credentials from form request
+        username = check_string(request.form['username'], 'username', MAX_STRING_LENGTH)
+        password, verify = verify_password(request.form['password'], request.form['confirm'],
+                                           MIN_PASSWORD_LENGTH, MAX_PASSWORD_LENGTH)
+        first_name = check_string(request.form['first_name'], "first_name")
+        last_name = check_string(request.form['last_name'], "last_name")
+        email = check_string(request.form['email'], "email")
+
+
+        # Does the user already exist?
+        user = Users.query.filter_by(username = username).first()
+
+        if user:
+            raise LookupError(f'User with username "{username}" already exists! Please choose another username.')
+
+
+
+        # User is unique, so let's create a new one
+        user = Users(
+            username = username,
+            first_name = first_name,
+            last_name = last_name,
+            email = email,
+            password = sha256_crypt.hash(password)
+        )
+
+        # commit to the db
+        Db.session.add(user)
+        Db.session.commit()
+
+        # set user as logged in
+        session['username'] = username
+
+        # Message Flashing
+        # https://flask.palletsprojects.com/en/2.0.x/patterns/flashing/#flashing-with-categories
+        flash('Congratulations, you are now a registered user!', 'success')
+
+        # Redirect to login page
+        return redirect(url_for('login'))
+
+    except Exception as e:
+        # show the error
+        flash(get_error(e), 'danger')
+
+        # redirect back to signup page
+        return redirect(url_for('register'))
+
+
 @app.route('/login')
 def login():
     form = LoginForm(request.form)
     return render_template('forms/login.html', form=form)
-
-
-@app.route('/register')
-def register():
-    form = RegisterForm(request.form)
-    return render_template('forms/register.html', form=form)
 
 
 @app.route('/forgot')
@@ -86,9 +166,8 @@ def forgot():
     form = ForgotForm(request.form)
     return render_template('forms/forgot.html', form=form)
 
+
 # Error handlers.
-
-
 @app.errorhandler(500)
 def internal_error(error):
     #db_session.rollback()
@@ -99,6 +178,11 @@ def internal_error(error):
 def not_found_error(error):
     return render_template('errors/404.html'), 404
 
+
+def get_error(e):
+    return e.message if hasattr(e, 'message') else str(e)
+
+
 if not app.debug:
     file_handler = FileHandler('error.log')
     file_handler.setFormatter(
@@ -108,6 +192,95 @@ if not app.debug:
     file_handler.setLevel(logging.INFO)
     app.logger.addHandler(file_handler)
     app.logger.info('errors')
+
+
+# Sanitize user input methods
+# CITATION: Lab 5 app.py
+def check_string(str=None, label="", max_length=MAX_STRING_LENGTH):
+    # can't have a null value!
+    if str is None:
+        raise ValueError(f'Variable {label} cannot be null!')
+    # strip the string of leading & trailing whitespace
+    str = str.strip()
+
+    if str == "":
+        raise ValueError(f'Variable {label} is empty!')
+    elif len(str) > max_length:
+        raise ValueError(f'Variable {label} is too long! {len(str)} > {max_length}')
+
+    return str
+
+
+def check_int(num=None, label="", min=float('-inf'), max=float('inf')):
+    try:
+        num = int(num)
+    except:
+        raise ValueError(f'Variable {label} malformed! ({num})')
+
+    if num < min or num > max:
+        raise ValueError(f'Variable {label} is out of range! ({num} <> [{min},{max}])')
+
+    return num
+
+
+def check_float(num=None, label="", min=float('-inf'), max=float('inf')):
+    try:
+        num = float(num)
+    except:
+        raise ValueError(f'Variable {label} malformed! ({num})')
+
+    if num < min or num > max:
+        raise ValueError(f'Variable {label} is out of range! ({num} <> [{min},{max}])')
+
+    return num
+
+
+# This is only to sanitize passwords for NEW users. Why don't we want to do these checks
+# when someone is authenticating? (Hint: security)
+def check_password(password=None, label="password", min_length=MIN_PASSWORD_LENGTH, max_length=MAX_PASSWORD_LENGTH):
+    # can't have a null value!
+    if password is None:
+        raise ValueError(f'Variable {label} cannot be null!')
+
+    # Note: we don't want to strip any characters from the password!
+
+    # string can't be empty
+    if password == "":
+        raise ValueError(f'Variable {label} is empty!')
+
+    # Need a minimum number of chars
+    if len(password) < min_length:
+        raise ValueError(f'Variable {label} is too short! {len(password)} < {min_length}')
+
+    # Need a maximum number of chars
+    if len(password) > max_length:
+        raise ValueError(f'Variable {label} is too long! {len(password)} > {max_length}')
+
+    return password
+
+
+# This is to ensure the passwords are both valid and the same
+def verify_password(password=None, verify=None, min_length=MIN_PASSWORD_LENGTH, max_length=MAX_PASSWORD_LENGTH):
+    password = check_password(password, 'password', min_length, max_length)
+    verify = check_password(verify, 'verify', min_length, max_length)
+
+    if password != verify:
+        raise ValueError('Passwords do not match!')
+
+    return password, verify  # returns both password & verification
+
+
+# Get the currently logged in user
+def logged_in_user():
+    # Three checks:
+    # 1. if the username key exists in a session
+    # 2. if the username isn't empty
+    # 3. if the username is actually valid
+    if 'username' in session and session['username'] != "":
+        # Will return None if no such user exists
+        return SkinUser.query.filter_by( username = session['username'] ).first()
+    else:
+        return None
 
 #----------------------------------------------------------------------------#
 # Launch.
