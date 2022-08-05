@@ -4,5 +4,7 @@
   "github_username": "bfulroth",
   "project_name": "",
   "app_name": "",
-  "project_short_description": ""
+  "project_short_description": "",
+  "db_name": "",
+  "db_name_slug": "{{ cookiecutter.db_name.replace('cookiecutter', '').strip().replace(' ', '_') }}"
 }
