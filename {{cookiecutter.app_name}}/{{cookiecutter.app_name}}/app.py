@@ -2,14 +2,17 @@
 # Imports
 #----------------------------------------------------------------------------#
 
+# Flask
 from flask import Flask, render_template, request, redirect
 from flask import session, flash, url_for
-# from flask.ext.sqlalchemy import SQLAlchemy
+from forms import *
+
+# Logging
 import logging
 from logging import Formatter, FileHandler
-from forms import *
-import os
 
+# Utilities
+import os
 import gunicorn
 import psycopg2
 from dotenv import load_dotenv
@@ -95,7 +98,8 @@ def register():
 
     # Redirect already logged in user
     if logged_in_user():
-        return redirect(url_for('about'))
+        flash('You are already logged in!')
+        return redirect(url_for('home'))
 
     form = RegisterForm(request.form)
     return render_template('forms/register.html', form=form, form_purpose='create_user')
@@ -243,9 +247,8 @@ def user_update_form():
 
 
 # Update User
-@app.route('/user/update/<username>')
 @app.route('/user/update', methods = ['POST'])
-def user_update(username=None, first_name=None, last_name=None, email=None):
+def user_update():
 
     try:
         # user must be logged in to view user profiles!
@@ -277,12 +280,13 @@ def user_update(username=None, first_name=None, last_name=None, email=None):
         Db.session.commit()
 
         # Go back to user profile
-        return redirect(url_for('profile'))
+        #TODO: change this redirect to go to a profile page and flash a message that your info was updated.
+        return redirect(url_for('home'))
 
     # Not authorized, go to login page
-    except KeyError as ke:
+    except Exception as e:
         # show the error
-        flash(get_error(ke), 'danger')
+        flash(get_error(e), 'danger')
 
         # redirect to login
         return redirect(url_for('login'))
@@ -413,7 +417,7 @@ def logged_in_user():
     # 3. if the username is actually valid
     if 'username' in session and session['username'] != "":
         # Will return None if no such user exists
-        return Users.query.filter_by( username = session['username'] ).first()
+        return Users.query.filter_by(username = session['username']).first()
     else:
         return None
 
