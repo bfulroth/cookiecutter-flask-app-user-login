@@ -300,6 +300,64 @@ def user_update():
         return go_back(request.referrer)
 
 
+@app.route('/user/update_password/form', methods = ['GET'])
+def user_update_password_form():
+
+    try:
+
+        user = logged_in_user()
+        if user is None:
+            flash('You are not logged in!')
+            return redirect(url_for('login'))
+
+        else:
+
+            form = UpdatePasswordForm(request.form)
+
+            return render_template('forms/update_password.html', form=form, form_purpose='update_password')
+
+    except Exception as e:
+        flash(e)
+        return redirect(url_for('login'))
+
+
+# Update User password
+@app.route('/user/update_password', methods = ['POST'])
+def user_update_password():
+
+    try:
+        # user must be logged in to view user profiles!
+        user = logged_in_user()
+        if user is None:
+            flash('You are not logged in!', 'danger')
+
+            # redirect back to login page
+            return redirect(url_for('login'))
+
+        # sanitize & check that the passwords match
+        new_password, verify = verify_password(request.form['new_password'], request.form['verify'],
+                                               MIN_PASSWORD_LENGTH, MAX_PASSWORD_LENGTH)
+
+        # set the password
+        user.password = sha256_crypt.hash(new_password)
+
+        # commit to Db
+        Db.session.commit()
+
+        # flash a message to the user
+        flash('Password successfully changed!', 'success')
+
+        return redirect(url_for('home'))
+
+    # Any other error
+    except Exception as e:
+        # show the error
+        flash(get_error(e), 'danger')
+
+        # go back to where we came from
+        return go_back(request.referrer)
+
+
 @app.route('/forgot')
 def forgot():
     form = ForgotForm(request.form)

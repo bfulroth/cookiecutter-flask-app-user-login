@@ -72,7 +72,17 @@
             <li><a href="{{ url_for('register') }}">Signup</a></li>
             <li><a href="{{ url_for('login') }}">Login</a></li>
             <li class="nav-item"><a href="{{ url_for('logout') }}" class="nav-link">Log Out</a>
-            <li class="nav-item"><a href="{{ url_for('user_update_form') }}" class="nav-link">Update User Info</a>
+                        <li class="dropdown">
+              <a class="dropdown-toggle" data-toggle="dropdown">User Settings<b class="caret"></b></a>
+              <ul class="dropdown-menu">
+                <li><a href="{{ url_for('user_update_form') }}" class="nav-link">Update User Info</a></li>
+                <li><a href="{{ url_for('user_update_password_form') }}" class="nav-link">Update Password</a></li>
+                <li><a>Something else here</a></li>
+                <li class="divider"></li>
+                <li class="dropdown-header">Nav header</li>
+                <li><a>Separated link</a></li>
+                <li><a>One more separated link</a></li>
+              </ul>
           </ul>
         </div><!--/.nav-collapse -->
       </div>

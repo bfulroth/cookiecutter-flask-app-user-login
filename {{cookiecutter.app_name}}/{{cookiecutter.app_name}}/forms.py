@@ -50,6 +50,16 @@ class LoginForm(Form):
     password = PasswordField('Password', [DataRequired()])
 
 
+class UpdatePasswordForm(Form):
+    # can't change username
+    new_password = StringField(
+        'New Password', validators=[DataRequired(), Length(min=6, max=40)]
+    )
+    verify = StringField(
+        'Verify', validators=[DataRequired(), Length(min=6, max=40)]
+    )
+
+
 class ForgotForm(Form):
     email = StringField(
         'Email', validators=[DataRequired(), Length(min=6, max=64)]
