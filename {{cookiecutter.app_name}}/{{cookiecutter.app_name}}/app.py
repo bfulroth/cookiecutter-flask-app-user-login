@@ -106,7 +106,6 @@ def create_user():
 
     try:
 
-
         # Init credentials from form request
         username = check_string(request.form['username'], 'username', MAX_STRING_LENGTH)
         password, verify = verify_password(request.form['password'], request.form['confirm'],
@@ -114,7 +113,6 @@ def create_user():
         first_name = check_string(request.form['first_name'], "first_name")
         last_name = check_string(request.form['last_name'], "last_name")
         email = check_string(request.form['email'], "email")
-
 
         # Does the user already exist?
         user = Users.query.filter_by(username = username).first()
@@ -162,6 +160,7 @@ def login(username, password, messages=[], errors=[]):
 
         # Redirect already logged in user
         if logged_in_user():
+            flash('You are already logged in!', 'success')
             return redirect(url_for('home'))
 
         form = LoginForm(request.form)
@@ -181,7 +180,10 @@ def login(username, password, messages=[], errors=[]):
             user = Users.query.filter_by(username = username).first()
 
             if user is None:
-                raise KeyError('Invalid username or password.')
+                flash('Invalid username or password.', 'danger')
+
+                # redirect back to login page
+                return redirect(url_for('login'))
 
             # Check User & Password
             sha256_crypt.verify(password, user.password)
@@ -211,6 +213,87 @@ def logout():
 
     # Go back to the login page.
     return redirect(url_for('login'))
+
+
+@app.route('/user/update/form')
+def user_update_form():
+
+    try:
+
+        user = logged_in_user()
+        if user is None:
+            flash('You are not logged in!')
+            return redirect(url_for('login'))
+
+        else:
+
+            form = UpdateUserInfo(request.form)
+
+            # Use the process method and the data attribute to pre-populate each fields data.
+            form.process(data = {'username': user.username,
+                                 'first_name': user.first_name,
+                                 'last_name': user.last_name,
+                                 'email': user.email})
+
+            return render_template('forms/user_update.html', form=form, form_purpose='update_user')
+
+    except Exception as e:
+        flash(e)
+        return redirect(url_for('login'))
+
+
+# Update User
+@app.route('/user/update/<username>')
+@app.route('/user/update', methods = ['POST'])
+def user_update(username=None, first_name=None, last_name=None, email=None):
+
+    try:
+        # user must be logged in to view user profiles!
+        user = logged_in_user()
+        if user is None:
+            flash('You are not logged in!', 'danger')
+
+            # redirect back to login page
+            return redirect(url_for('login'))
+
+        # sanitize input
+        username = check_string(request.form['username'], 'username')
+        first_name = check_string(request.form['first_name'], "first_name")
+        last_name = check_string(request.form['last_name'], "last_name")
+        email = check_string(request.form['email'], "email")
+
+        # The logged in user can only update their own profile!
+        if username != user.username:
+            flash('Unauthorized action!', 'danger')
+
+            # redirect back to login page
+            return redirect(url_for('login'))
+
+        user.username = username
+        user.first_name = first_name
+        user.last_name = last_name
+        user.email = email
+
+        Db.session.commit()
+
+        # Go back to user profile
+        return redirect(url_for('profile'))
+
+    # Not authorized, go to login page
+    except KeyError as ke:
+        # show the error
+        flash(get_error(ke), 'danger')
+
+        # redirect to login
+        return redirect(url_for('login'))
+
+    # Any other error
+    except Exception as e:
+        # show the error
+        flash(get_error(e), 'danger')
+
+        # redirect back to index page (or referrer)
+        return go_back(request.referrer)
 
 
 @app.route('/forgot')
@@ -333,6 +416,12 @@ def logged_in_user():
         return Users.query.filter_by( username = session['username'] ).first()
     else:
         return None
+
+
+# Go back to where we came from
+def go_back(referrer=None):
+    last_page = referrer if referrer else url_for('home')
+    return redirect(last_page)
 
 #----------------------------------------------------------------------------#
 # Launch.

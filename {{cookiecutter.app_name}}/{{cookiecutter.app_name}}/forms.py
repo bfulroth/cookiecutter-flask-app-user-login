@@ -27,6 +27,24 @@ class RegisterForm(Form):
     )
 
 
+# Form Classes
+class UpdateUserInfo(Form):
+
+    # Can't change user name.
+    username = StringField(
+        'Username', validators=[DataRequired(), Length(min=6, max=64)]
+    )
+    first_name = StringField(
+        'First Name', validators=[DataRequired(), Length(min=1, max=64)]
+    )
+    last_name = StringField(
+        'Last Name', validators=[DataRequired(), Length(min=1, max=64)]
+    )
+    email = StringField(
+        'Email', validators=[DataRequired(), Length(min=6, max=64)]
+    )
+
+
 class LoginForm(Form):
     username = StringField('Username', [DataRequired()])
     password = PasswordField('Password', [DataRequired()])
