@@ -41,26 +41,6 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.secret_key = os.environ.get('SECRET_KEY') # Make sure this is set in Heroku dashboard for this new app!
 Db.init_app(app)
 
-# Automatically tear down SQLAlchemy.
-'''
-@{{cookiecutter.app_name}}.teardown_request
-def shutdown_session(exception=None):
-    db_session.remove()
-'''
-
-# Login required decorator.
-'''
-def login_required(test):
-    @wraps(test)
-    def wrap(*args, **kwargs):
-        if 'logged_in' in session:
-            return test(*args, **kwargs)
-        else:
-            flash('You need to login first.')
-            return redirect(url_for('login'))
-    return wrap
-'''
-
 # Define default route parameters
 MAX_STRING_LENGTH = 64
 MIN_PASSWORD_LENGTH = 6
@@ -367,7 +347,6 @@ def forgot():
 # Error handlers.
 @app.errorhandler(500)
 def internal_error(error):
-    #db_session.rollback()
     return render_template('errors/500.html'), 500
 
 
@@ -378,17 +357,6 @@ def not_found_error(error):
 
 def get_error(e):
     return e.message if hasattr(e, 'message') else str(e)
-
-
-if not app.debug:
-    file_handler = FileHandler('error.log')
-    file_handler.setFormatter(
-        Formatter('%(asctime)s %(levelname)s: %(message)s [in %(pathname)s:%(lineno)d]')
-    )
-    app.logger.setLevel(logging.INFO)
-    file_handler.setLevel(logging.INFO)
-    app.logger.addHandler(file_handler)
-    app.logger.info('errors')
 
 
 # Sanitize user input methods
@@ -492,10 +460,3 @@ def go_back(referrer=None):
 # Default port:
 if __name__ == '__main__':
     app.run()
-
-# Or specify port manually:
-'''
-if __name__ == '__main__':
-    port = int(os.environ.get('PORT', 5000))
-    {{cookiecutter.app_name}}.run(host='0.0.0.0', port=port)
-'''
