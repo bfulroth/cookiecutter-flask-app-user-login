@@ -10,9 +10,8 @@
   "db_name": "",
   "db_name_slug": "{{ cookiecutter.db_name.replace('cookiecutter', '').strip().replace(' ', '_') }}",
   "_copy_without_render": [
-        "{{cookiecutter.app_slug}}/templates/*.html",
-        "{{cookiecutter.app_slug}}/static/css/*.css",
-        "{{cookiecutter.app_slug}}/static/js/*.js",
-        "{{cookiecutter.app_slug}}/static/js/libs/*.js"
-  ]
+        "*.html",
+        "*templates",
+        "*static"
+    ]
 }
