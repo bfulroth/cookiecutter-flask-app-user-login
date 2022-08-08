@@ -1,7 +1,4 @@
 *.pyc
 .DS_Store
-env
 venv
 .idea/
-.env
-.flaskenv

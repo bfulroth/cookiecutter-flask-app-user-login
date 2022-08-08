@@ -32,7 +32,6 @@ from passlib.hash import sha256_crypt
 # Initialize app
 app = Flask(__name__)
 app.database_key = os.environ.get('DATABASE_KEY')
-#db = SQLAlchemy({{cookiecutter.app_name}})
 
 # Initialize DB
 Db = SQLAlchemy()
