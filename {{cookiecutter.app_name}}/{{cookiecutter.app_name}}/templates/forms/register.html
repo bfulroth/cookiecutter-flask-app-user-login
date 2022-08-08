@@ -3,12 +3,18 @@
 {% block content %}
   <form method="POST" action="/user/create">
     <h3 class="form-heading">Register <a href="{{ url_for('home') }}" title="Back to homepage"><i class="fa fa-home pull-right"></i></a></h3>
-    {{ form.username(class_ = 'form-control first-input', placeholder = form.username.label.text, required = true, autofocus = true) }}
-    {{ form.first_name(class_ = 'form-control', placeholder = form.first_name.label.text, required = true, autofocus = true) }}
-    {{ form.last_name(class_ = 'form-control', placeholder = form.last_name.label.text, required = true, autofocus = true) }}
-    {{ form.email(class_ = 'form-control', placeholder = form.email.label.text, required = true) }}
-    {{ form.password(class_ = 'form-control', placeholder = form.password.label.text, required = true) }}
-    {{ form.confirm(class_ = 'form-control last-input', placeholder = form.confirm.label.text, required = true) }}
+      {% for field in form %}
+          {% if field.id != 'csrf_token' %}
+              <div class="form-group">
+                  {{ field(class="form-control", placeholder = field.label.text, required = true) }}
+                  {% if field.errors %}
+                      {% for error in field.errors %}
+                          <p class="form-error-message">{{ error }}</p>
+                      {% endfor %}
+                  {% endif %}
+              </div>
+          {% endif %}
+      {% endfor %}
     <p class="pull-left"><a href="{{ url_for('login') }}">Login</a></p>
     <input type="submit" value="Register" class="btn btn-primary btn-lg btn-block">
   </form>

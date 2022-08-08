@@ -3,14 +3,19 @@
 {% block content %}
   <form method="POST" action="/user/update">
     <h3 class="form-heading">Update Your Info<a href="{{ url_for('home') }}" title="Back to homepage"><i class="fa fa-home pull-right"></i></a></h3>
-    <label style="padding-bottom: 2px; padding-top: 5px; color:gray;">User Name:</label>
-      {{ form.username(class_ = 'form-control first-input', placeholder = form.username.label.text, required = true, autofocus = true) }}
-    <label style="padding-bottom: 2px; padding-top: 5px; color:gray;">First Name:</label>
-    {{ form.first_name(class_ = 'form-control', placeholder = form.first_name.label.text, required = true, autofocus = true) }}
-      <label style="padding-bottom: 2px; padding-top: 5px; color:gray;">Last Name:</label>
-    {{ form.last_name(class_ = 'form-control', placeholder = form.last_name.label.text, required = true, autofocus = true) }}
-      <label style="padding-bottom: 2px; padding-top: 5px; color:gray;">Email:</label>
-    {{ form.email(class_ = 'form-control', placeholder = form.email.label.text, required = true) }}
+      {% for field in form %}
+          {% if field.id != 'csrf_token' %}
+              <div class="form-group">
+                <label style="color:gray;">{{ field.label }}:</label>
+                  {{ field(class="form-control", placeholder = field.label.text, required = true) }}
+                  {% if field.errors %}
+                      {% for error in field.errors %}
+                          <p class="form-error-message">{{ error }}</p>
+                      {% endfor %}
+                  {% endif %}
+              </div>
+          {% endif %}
+      {% endfor %}
     <input type="submit" value="Update" class="btn btn-primary btn-lg btn-block">
   </form>
 {% endblock %}
