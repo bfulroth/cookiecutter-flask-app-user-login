@@ -14,9 +14,9 @@ INSERT INTO users (
     password,
     email
 ) VALUES (
-    'bfulroth',
-    'Ben',
-    'Fulroth',
-    'pass123',
-    'ben@test.com'
+    'test_username',
+    'test_first_name',
+    'test_last_name',
+    'password1',
+    'test_user@test.com'
 );
