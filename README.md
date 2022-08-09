@@ -10,7 +10,7 @@ Project Structure
 --------
 ### Screenshots
 
-![Structure]('https://github.com/bfulroth/cookiecutter-flask-app-user-login/blob/9915c40afb538a5767af6a3a645a595620bf1163/%7B%7Bcookiecutter.project_slug%7D%7D/%7B%7Bcookiecutter.app_slug%7D%7D/screenshots/cookiecutter_app_structure.png')
+![Structure]('https://github.com/bfulroth/cookiecutter-flask-app-user-login/blob/master/%7B%7Bcookiecutter.project_slug%7D%7D/%7B%7Bcookiecutter.app_slug%7D%7D/screenshots/cookiecutter_app_structure.png')
 
 ### Quick Start
 
