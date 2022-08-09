@@ -10,34 +10,36 @@ Project Structure
 --------
 ### Screenshots
 
-![Structure]('https://github.com/bfulroth/cookiecutter-flask-app-user-login/blob/master/%7B%7Bcookiecutter.project_slug%7D%7D/%7B%7Bcookiecutter.app_slug%7D%7D/screenshots/cookiecutter_app_structure.png')
+![Structure]('{{cookiecutter.project_slug}}/{{cookiecutter.app_slug}}/screenshots/cookiecutter_app_structure.png')
 
 ### Quick Start
 
-1. Clone the repo
+1. Install cookiecutter
+
+2. Clone the repo
   ```
-  $ git clone https://github.com/bfulroth/flask-app-cookiecutter.git
-  $ cd flask-app-cookiecutter
+  $ https://github.com/bfulroth/cookiecutter-flask-app-user-login.git
+  $ cd cookiecutter-flask-app-user-login
   ```
 
-2. Initialize and activate a conda virtual env:
+3. Initialize and activate a conda virtual env:
   ```
   $ conda create -n ENV_NAME
   $ conda activate ENV_NAME
   $ conda install pip
   ```
 
-3. Install the dependencies:
+4. Install the dependencies:
   ```
   $ pip install -r requirements.txt
   ```
 
-4. Configure database url and app secret key stored as variables in .env.  Make sure NOT to commit your .env file to git! 
+5. Configure database url and app secret key stored as variables in .env.  Make sure NOT to commit your .env file to git! 
 See example .env file below.
 
 ![example_env_file]('https://github.com/bfulroth/cookiecutter-flask-app-user-login/blob/9915c40afb538a5767af6a3a645a595620bf1163/%7B%7Bcookiecutter.project_slug%7D%7D/%7B%7Bcookiecutter.app_slug%7D%7D/screenshots/flask_app_example_env.png')
 
-5. Configure your local test database.
+6. Configure your local test database.
    - For postgres:
       - [PostgreSQL](https://www.postgresql.org/): The World's Most Advanced Open Source Relational Database.
       - Follow the tutorials: [installation](https://www.postgresqltutorial.com/install-postgresql/) and [connection](https://www.postgresqltutorial.com/connect-to-postgresql-database/)
@@ -66,16 +68,16 @@ See example .env file below.
       - Confirm in psql: `SELECT * FROM {{cookiecutter.db_name_slug}};`.
    
 
-6. Run the development server:
+7. Run the development server:
   ```
   $ flask run
   ```
 
-7. Navigate to [http://localhost:5000](http://localhost:5000)
+8. Navigate to [http://localhost:5000](http://localhost:5000)
    
-8. Develop your app by adding your python modules and flask routes.
+9. Develop your app by adding your python modules and flask routes.
 
-9. Note: when adding a new package add the dependency to requirements.txt.
+10. Note: when adding a new package add the dependency to requirements.txt.
     - `pip install pipreqs`
     - `pipreqs --force .`
 
@@ -83,9 +85,9 @@ See example .env file below.
 Deploying to Heroku
 ------
 
-10. Signup for [Heroku](https://api.heroku.com/signup)
-11. Login to Heroku and download the [Heroku Toolbelt](https://toolbelt.heroku.com/)
-12. Once installed, open your command-line and run the following command - `heroku login`. Then follow the prompts:
+11. Signup for [Heroku](https://api.heroku.com/signup)
+12. Login to Heroku and download the [Heroku Toolbelt](https://toolbelt.heroku.com/)
+13. Once installed, open your command-line and run the following command - `heroku login`. Then follow the prompts:
 
   ```
   Enter your Heroku credentials.
@@ -97,27 +99,27 @@ Deploying to Heroku
   Uploading ssh public key /Users/michaelherman/.ssh/id_rsa.pub
   ```
 
-13. Heroku recognizes the dependencies needed through a *requirements.txt* file. Create one using the following command: `pip freeze > requirements.txt`. Now, this will only create the dependencies from the libraries you installed using pip. If you used easy_install, you will need to add them directly to the file.
+14. Heroku recognizes the dependencies needed through a *requirements.txt* file. Create one using the following command: `pip freeze > requirements.txt`. Now, this will only create the dependencies from the libraries you installed using pip. If you used easy_install, you will need to add them directly to the file.
 
-14. Create your app on Heroku:
+15. Create your app on Heroku:
 
   ```
   $ heroku create <name_it_if_you_want>
   ```
 
-15. Deploy your code to Heroku:
+16. Deploy your code to Heroku:
 
   ```
   $ git push heroku master
   ```
 
-15. View the app in your browser:
+17. View the app in your browser:
 
   ```
   $ heroku open
   ```
 
-16. Having problems? Look at the Heroku error log:
+18. Having problems? Look at the Heroku error log:
 
   ```
   $ heroku logs
