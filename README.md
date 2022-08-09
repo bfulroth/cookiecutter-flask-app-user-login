@@ -10,7 +10,7 @@ Project Structure
 --------
 ### Screenshots
 
-![Structure]('{{cookiecutter.project_slug}}/{{cookiecutter.app_slug}}/screenshots/Screen Shot 2022-08-08 at 3.43.15 PM.png')
+![Structure]('https://github.com/bfulroth/cookiecutter-flask-app-user-login/blob/9915c40afb538a5767af6a3a645a595620bf1163/%7B%7Bcookiecutter.project_slug%7D%7D/%7B%7Bcookiecutter.app_slug%7D%7D/screenshots/cookiecutter_app_structure.png')
 
 ### Quick Start
 
@@ -35,7 +35,7 @@ Project Structure
 4. Configure database url and app secret key stored as variables in .env.  Make sure NOT to commit your .env file to git! 
 See example .env file below.
 
-![example_env_file]('{{cookiecutter.project_slug}}/{{cookiecutter.app_slug}}/screenshots/Screen Shot 2022-08-08 at 3.43.15 PM.png')
+![example_env_file]('https://github.com/bfulroth/cookiecutter-flask-app-user-login/blob/9915c40afb538a5767af6a3a645a595620bf1163/%7B%7Bcookiecutter.project_slug%7D%7D/%7B%7Bcookiecutter.app_slug%7D%7D/screenshots/flask_app_example_env.png')
 
 5. Configure your local test database.
    - For postgres:
