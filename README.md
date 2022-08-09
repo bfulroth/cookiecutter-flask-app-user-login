@@ -8,7 +8,6 @@ Building a flask app with user registration and logins? Awesome! This cookiecutt
 
 Project Structure
 --------
-### Screenshots
 ![project](https://github.com/bfulroth/cookiecutter-flask-app-user-login/blob/f55aed2e3615db6825ba20e8c13c5750abff7292/%7B%7Bcookiecutter.project_slug%7D%7D/%7B%7Bcookiecutter.app_slug%7D%7D/screenshots/cookiecutter_app_structure.png)
 
 ### Quick Start
