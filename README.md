@@ -9,12 +9,20 @@ Building a flask app with user registration and logins? Awesome! This cookiecutt
 Project Structure
 --------
 ### Screenshots
-
-![Structure]('{{cookiecutter.project_slug}}/{{cookiecutter.app_slug}}/screenshots/cookiecutter_app_structure.png')
+![project](https://github.com/bfulroth/cookiecutter-flask-app-user-login/blob/f55aed2e3615db6825ba20e8c13c5750abff7292/%7B%7Bcookiecutter.project_slug%7D%7D/%7B%7Bcookiecutter.app_slug%7D%7D/screenshots/cookiecutter_app_structure.png)
 
 ### Quick Start
 
 1. Install cookiecutter
+
+```
+$ pip install -U cookiecutter
+```
+OR
+
+```
+$ brew install cookiecutter
+```
 
 2. Clone the repo
   ```
@@ -37,7 +45,7 @@ Project Structure
 5. Configure database url and app secret key stored as variables in .env.  Make sure NOT to commit your .env file to git! 
 See example .env file below.
 
-![example_env_file]('https://github.com/bfulroth/cookiecutter-flask-app-user-login/blob/9915c40afb538a5767af6a3a645a595620bf1163/%7B%7Bcookiecutter.project_slug%7D%7D/%7B%7Bcookiecutter.app_slug%7D%7D/screenshots/flask_app_example_env.png')
+![env](https://github.com/bfulroth/cookiecutter-flask-app-user-login/blob/f55aed2e3615db6825ba20e8c13c5750abff7292/%7B%7Bcookiecutter.project_slug%7D%7D/%7B%7Bcookiecutter.app_slug%7D%7D/screenshots/flask_app_example_env.png)
 
 6. Configure your local test database.
    - For postgres:
