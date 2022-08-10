@@ -21,7 +21,6 @@ from dotenv import load_dotenv
 load_dotenv('.env')
 
 # Database
-from flask_sqlalchemy import SQLAlchemy
 from models.users import Users, Db
 from passlib.hash import sha256_crypt
 
@@ -34,7 +33,6 @@ app = Flask(__name__)
 app.database_key = os.environ.get('DATABASE_KEY')
 
 # Initialize DB
-Db = SQLAlchemy()
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get("DATABASE_URL").replace("postgres://", "postgresql://")
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.secret_key = os.environ.get('SECRET_KEY') # Make sure this is set in Heroku dashboard for this new app!
@@ -134,6 +132,24 @@ def create_user():
 
         # redirect back to signup page
         return redirect(url_for('register'))
+
+
+@app.route('/user/profile')
+def user_profile():
+
+    try:
+        user = logged_in_user()
+        if user is None:
+            flash('You are not logged in!')
+            return redirect(url_for('login'))
+
+        else:
+
+            return render_template('pages/profile.html', user=user, form_purpose='profile')
+
+    except Exception as e:
+        flash(e)
+        return redirect(url_for('login'))
 
 
 @app.route('/login', methods = ['GET', 'POST'], defaults = POST_USER_LOGIN_DEFAULTS)
@@ -258,9 +274,10 @@ def user_update():
 
         Db.session.commit()
 
-        # Go back to user profile
-        #TODO: change this redirect to go to a profile page and flash a message that your info was updated.
-        return redirect(url_for('home'))
+        flash('Your info was successfully updated.', 'success')
+
+        # Go back to the profile with the updated info
+        return go_back(request.referrer)
 
     # Not authorized, go to login page
     except Exception as e:
@@ -334,6 +351,48 @@ def user_update_password():
         flash(get_error(e), 'danger')
 
         # go back to where we came from
+        return go_back(request.referrer)
+
+
+# NOTE: This method is DANGEROUS!
+@app.route('/user/delete/')
+def user_delete():
+
+    try:
+        # user must be logged in!
+        user = logged_in_user()
+
+        if user is None:
+            flash('You are not logged in!', 'danger')
+
+            # redirect back to login page
+            return redirect(url_for('login'))
+
+        # TODO delete all user associated files
+        # files = Model.query.filter_by(user_id = user.uid).all()
+
+        # for file in files:
+        #     Db.session.delete(file)
+
+        # Delete the user
+        Db.session.delete(user)
+
+        # Commit the changes
+        Db.session.commit()
+
+        # logout
+
+        flash('Account successfully deleted.')
+
+        # Our user is dead, so we need to log out!
+        return redirect(url_for('logout'))
+
+    # Any other error
+    except Exception as e:
+        # show the error
+        flash(get_error(e), 'danger')
+
+        # got back to where we came from
         return go_back(request.referrer)
 
 
