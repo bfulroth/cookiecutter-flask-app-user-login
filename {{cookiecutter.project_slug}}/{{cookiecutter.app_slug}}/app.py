@@ -214,6 +214,7 @@ def logout():
     return redirect(url_for('login'))
 
 
+# Update user form
 @app.route('/user/update/form')
 def user_update_form():
 
@@ -241,7 +242,7 @@ def user_update_form():
         return redirect(url_for('login'))
 
 
-# Update User
+# Update user method
 @app.route('/user/update', methods = ['POST'])
 def user_update():
 
@@ -296,6 +297,7 @@ def user_update():
         return go_back(request.referrer)
 
 
+# Update password form
 @app.route('/user/update_password/form', methods = ['GET'])
 def user_update_password_form():
 
@@ -317,7 +319,7 @@ def user_update_password_form():
         return redirect(url_for('login'))
 
 
-# Update User password
+# Update User password method
 @app.route('/user/update_password', methods = ['POST'])
 def user_update_password():
 
@@ -369,6 +371,12 @@ def user_delete():
             return redirect(url_for('login'))
 
         # TODO delete all user associated files
+        # Delete all of the users' blabs (such as stored files)
+        # blabs = Blab.query.filter_by( author = user.uid ).all()
+        # for blab in blabs:
+        #     Db.session.delete(blab)
+
+        # Example
         # files = Model.query.filter_by(user_id = user.uid).all()
 
         # for file in files:
@@ -380,9 +388,7 @@ def user_delete():
         # Commit the changes
         Db.session.commit()
 
-        # logout
-
-        flash('Account successfully deleted.')
+        flash('Account successfully deleted.', 'success')
 
         # Our user is dead, so we need to log out!
         return redirect(url_for('logout'))
@@ -400,6 +406,21 @@ def user_delete():
 def forgot():
     form = ForgotForm(request.form)
     return render_template('forms/forgot.html', form=form)
+
+
+# Unimplemented feature
+def unimplemented_feature():
+    try:
+        # lots to do here!
+        raise RuntimeError("Unimplemented feature!")
+
+    # Any error
+    except Exception as e:
+        # show the error
+        flash(get_error(e), 'danger')
+
+        # redirect back to login page
+        return redirect(url_for('home'))
 
 
 # Error handlers.

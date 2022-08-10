@@ -14,7 +14,23 @@
 	<!--Reference; Onclick action to redirect to route attached to create_user_form: https://stackoverflow.com/questions/42601478/flask-calling-python-function-on-button-onclick-event	-->
 	<button type="button" class="btn btn-primary" onclick="window.location.href='{{ url_for( 'user_update_form') }}'">Update Info</button>
 	<button type="button" class="btn btn-primary" onclick="window.location.href='{{ url_for( 'user_update_password_form') }}'">Change Password</button>
-	<button type="button" class="btn btn-primary" onclick="window.location.href='{{ url_for( 'user_delete') }}'">Delete User</button>
+	<button type="button" class="btn btn-primary" onclick="ConfirmDeleteUser()">Delete User</button>
 </div>
+
+<script>
+	function ConfirmDeleteUser()
+{
+  var result = confirm("Are you sure you want to delete your profile?  This cannot be undone.");
+if (result) {
+    $.ajax({
+  type: "POST",
+  url: "{{ url_for( 'user_delete') }}",
+}).done((o) => {
+   console.log(o)
+})
+alert("Your profile has been deleted.")
+}
+}
+</script>
 
 {% endblock %}
