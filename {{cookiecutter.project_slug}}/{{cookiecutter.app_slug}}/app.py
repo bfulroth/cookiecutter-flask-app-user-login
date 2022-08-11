@@ -16,6 +16,7 @@ import os
 import gunicorn
 import psycopg2
 from dotenv import load_dotenv
+from version import __version__
 
 # Load environment variables
 load_dotenv('.env')
@@ -288,14 +289,6 @@ def user_update():
         # redirect to login
         return redirect(url_for('login'))
 
-    # Any other error
-    except Exception as e:
-        # show the error
-        flash(get_error(e), 'danger')
-
-        # redirect back to index page (or referrer)
-        return go_back(request.referrer)
-
 
 # Update password form
 @app.route('/user/update_password/form', methods = ['GET'])
@@ -387,8 +380,6 @@ def user_delete():
 
         # Commit the changes
         Db.session.commit()
-
-        flash('Account successfully deleted.', 'success')
 
         # Our user is dead, so we need to log out!
         return redirect(url_for('logout'))
