@@ -124,7 +124,7 @@ def create_user():
         flash('Congratulations, you are now a registered user!', 'success')
 
         # Redirect to login page
-        return redirect(url_for('login'))
+        return redirect(url_for('home'))
 
     except Exception as e:
         # show the error
