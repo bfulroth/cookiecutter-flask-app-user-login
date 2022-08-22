@@ -11,7 +11,7 @@
   "db_name_slug": "{{ cookiecutter.db_name.replace('cookiecutter', '').strip().replace(' ', '_') }}",
   "_copy_without_render": [
         "*.html",
-        "*templates",
-        "*static"
+        "*.css",
+        "*.js"
     ]
 }
